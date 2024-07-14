@@ -49,3 +49,6 @@ Assertions: Use from the selected framework;
 
 [Optional] Loggers: Use from the selected framework.
 
+--> npm i 
+--> make sure that u have a chrome and edge 
+--> npm test 

@@ -1,26 +1,29 @@
 const login = require('../PO/loginForm')
 
-describe("Use case to test https://www.saucedemo.com/", async() =>{
-    beforeEach(async() => {
-        await login.openPage()
-    })
-    it("Use Case - 1 : Test Login form with empty credentials", async() =>{
-        await login.login('','')
-        let error =  await login.ErrorCheck()
-        await expect(error).toEqual("Epic sadface: Username is required")
-    })
-    it("Use Case - 2 : Test Login form with credentials by passing Username", async() =>{
-        const username = await login.username()
-        await login.login(username,'')
-        let error =  await login.ErrorCheck()
-        await expect(error).toEqual("Epic sadface: Password is required")
-    })
-    it("Use Case - 3 : Test Login form with credentials by passing Username & Password", async() =>{
-        const username = await login.username()
-        const password = await login.password()
-        await login.login(username, password)
-        await browser.pause(2000)
-        const title = await browser.getTitle()
-        console.log(title)
+describe("Use case to test https://www.saucedemo.com/", () => {
+    //Data Provider
+    const loginData = [
+        { username: '', password: '', errorMsg: 'Epic sadface: Username is required' },
+        { username: 'standard_user', password: '', errorMsg: 'Epic sadface: Password is required' },
+        { username: 'standard_user', password: 'secret_sauce', successMsg: 'Swag Labs' }
+    ]
+    // Iterating through each test case from loginData
+    loginData.forEach(({ username, password, errorMsg, successMsg }) => {
+        it(`Test Login with username: ${username} and password: ${password}`, async() => {
+            // Open the login page
+            await login.openPage()
+            // Perform login attempt
+            await login.login(username, password)
+            
+            // Check for error message if provided
+            if (errorMsg) {
+                let error = await login.ErrorCheck()
+                await expect(error).toEqual(errorMsg)
+            } else if (successMsg) {
+                // Check for success message (title verification)
+                const title = await browser.getTitle()
+                await expect(title).toEqual(successMsg)
+            }
+        })
     })
 })
