@@ -1,6 +1,6 @@
 const login = require('../PO/loginForm')
 
-describe("Use case to test https://www.saucedemo.com/", () => {
+describe("Use cases to test https://www.saucedemo.com/", () => {
     //Data Provider
     const loginData = [
         { username: '', password: '', errorMsg: 'Epic sadface: Username is required' },
