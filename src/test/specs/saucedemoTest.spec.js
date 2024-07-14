@@ -9,7 +9,7 @@ describe("Use case to test https://www.saucedemo.com/", () => {
     ]
     // Iterating through each test case from loginData
     loginData.forEach(({ username, password, errorMsg, successMsg }) => {
-        it(`Test Login with username: ${username} and password: ${password}`, async() => {
+        it(`Given ${username} and ${password}, when attempting to login, then it should ${errorMsg ? 'display error message: ' + errorMsg : 'navigate to dashboard and display title: ' + successMsg}`, async() => {
             // Open the login page
             await login.openPage()
             // Perform login attempt
