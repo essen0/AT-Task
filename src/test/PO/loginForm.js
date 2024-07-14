@@ -13,40 +13,41 @@ class loginForm {
         await browser.maximizeWindow();
         await browser.url('https://www.saucedemo.com/');
     }
-    async getValue(selectors){
+    async getValue(selectors, numberFromArr){
         const textElement =  await $(selectors)
         const fullText = await textElement.getText()
         const textLines = fullText.split('\n').map(line => line.trim())
-        const elementText = textLines[1];
+        textLines.shift()
+        const elementText = textLines[numberFromArr - 1];
         return elementText
     }
     async username(){
-        return this.getValue(this.selectors.usernameValue)
+        return this.getValue(this.selectors.usernameValue, 1)
     }
     async password(){
-        return this.getValue(this.selectors.passwordValue)
+        return this.getValue(this.selectors.passwordValue, 1)
     }
     async login(username, password){
         const userNameInput = await $(this.selectors.userNameInput)
         const passwordInput = await $(this.selectors.passwordInput)
 
         if (typeof username !== 'string') {
-            username = String(username);
+            username = String(username)
+            console.log(username)
         }
         if (typeof password !== 'string') {
-            password = String(password);
+            password = String(password)
+            console.log(password)
         }
-        await userNameInput.setValue(username);
-        await passwordInput.setValue(password);
+        await userNameInput.setValue(username)
+        await passwordInput.setValue(password)
 
-        await browser.pause(2000);
-        
         await $(this.selectors.loginButton).click()
     }
     async ErrorCheck(){
         if (await $(this.selectors.error).isExisting()) {
-            const errorElement = await $(this.selectors.error);
-            return await errorElement.getText();
+            const errorElement = await $(this.selectors.error)
+            return await errorElement.getText()
         }
     }
 } 
