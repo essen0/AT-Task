@@ -13,25 +13,41 @@ class loginForm {
         // Maximize the browser window
         await browser.maximizeWindow()
         // Navigate to the specified URL
-        await browser.url('https://www.saucedemo.com/')
+        await browser.url('https://www.saucedemo.com')
     }
-    // Method to perform login action
-    async login(username, password){
-        // Locate username and password input fields
-        const userNameInput = await $(this.selectors.userNameInput)
-        const passwordInput = await $(this.selectors.passwordInput)
-
-        // Ensure username and password are strings
-        if (typeof username !== 'string') {
-            username = String(username)
-        }
-        if (typeof password !== 'string') {
-            password = String(password)
-        }
-        // Enter username and password
-        await userNameInput.setValue(username)
-        await passwordInput.setValue(password)
-        // Click the login button
+    // Clear the input field by selecting all text and deleting it
+    async clearInput(selector) {
+        const input = await $(selector)
+        await input.click()
+        await browser.keys(['Control', 'a'])
+        await browser.keys('Backspace')
+    }
+    // Set a value in the input field
+    async setValue(selector, value) {
+        const input = await $(selector)
+        await input.setValue(value)
+    }
+    // Fill in username and password fields
+    async login(username, password) {
+        await this.setValue(this.selectors.userNameInput, username)
+        await this.setValue(this.selectors.passwordInput, password)
+    }
+    // Clear both input fields and attempt login
+    async clearAllBeforeLogin(username, password) {
+        await this.login(username, password)
+        await this.clearInput(this.selectors.userNameInput)
+        await this.clearInput(this.selectors.passwordInput)
+        await $(this.selectors.loginButton).click()
+    }
+    // Clear the password field and attempt login
+    async clearPasswordBeforeLogin(username, password) {
+        await this.login(username, password)
+        await this.clearInput(this.selectors.passwordInput)
+        await $(this.selectors.loginButton).click()
+    }
+    // Enter username and password and click the login button
+    async enteringAllCredentials(username, password){
+        await this.login(username, password)
         await $(this.selectors.loginButton).click()
     }
     // Method to check for error message
@@ -45,7 +61,7 @@ class loginForm {
             }
         }
         // Throw error if no error message found
-        throw new Error("Something went wrong(ErrorMsgCheck)")
+        throw new Error("Something went wrong (ErrorMsgCheck)")
     }
 } 
 

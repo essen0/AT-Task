@@ -1,28 +1,33 @@
-const login = require('../PO/loginForm')
+const loginForm = require('../PO/loginForm')
+const loginData = require('../Data/LoginData'); 
 
-describe("Use cases to test https://www.saucedemo.com/", () => {
-    //Data Provider
-    const loginData = [
-        { username: '', password: '', errorMsg: 'Epic sadface: Username is required' },
-        { username: 'standard_user', password: '', errorMsg: 'Epic sadface: Password is required' },
-        { username: 'standard_user', password: 'secret_sauce', successMsg: 'Swag Labs' }
-    ]
+
+describe("Use cases to test https://www.saucedemo.com/", () => {  
     // Iterating through each test case from loginData
     loginData.forEach(({ username, password, errorMsg, successMsg }) => {
-        it(`Given ${username} and ${password}, when attempting to login, then it should ${errorMsg ? 'display error message: ' + errorMsg : 'navigate to dashboard and display title: ' + successMsg}`, async() => {
+        it(` Given ${username} and ${password}, when attempting to login, then it should ${errorMsg ? 'display error message: ' + errorMsg : 'navigate to dashboard and display title: ' + successMsg}`, async() => {
             // Open the login page
-            await login.openPage()
+            await loginForm.openPage()
             // Perform login attempt
-            await login.login(username, password)
-            
-            // Check for error message if provided
             if (errorMsg) {
-                let error = await login.ErrorCheck()
-                await expect(error).toEqual(errorMsg)
+                // Check if the error is related to the username being required
+                if (errorMsg === 'Epic sadface: Username is required') {
+                    // Perform the task of filling both fields, clearing them, and verifying they are cleared
+                    await loginForm.clearAllBeforeLogin(username, password);
+                } else if (errorMsg === 'Epic sadface: Password is required') {
+                    // Check if the error is related to the password being required
+                    await loginForm.clearPasswordBeforeLogin(username, password);
+                }
+                // Check for the error message on the page
+                let error = await loginForm.ErrorCheck();
+                 // Verify that the actual error message matches the expected error message
+                await expect(error).toEqual(errorMsg);
             } else if (successMsg) {
-                // Check for success message (title verification)
-                const title = await browser.getTitle()
-                await expect(title).toEqual(successMsg)
+                // If a success message is expected, perform the login with credentials
+                await loginForm.enteringAllCredentials(username, password);
+                const title = await browser.getTitle();
+                // Verify that the page title matches the expected success message
+                await expect(title).toEqual(successMsg);
             }
         })
     })
